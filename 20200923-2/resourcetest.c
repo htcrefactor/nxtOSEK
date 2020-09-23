@@ -12,7 +12,8 @@ DeclareTask(Task3);
 DeclareTask(Task4);
 
 /* Global Variables */
-
+int x = 0;
+int y = 0;
 
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
 void user_1ms_isr_type2(void) {
@@ -36,6 +37,15 @@ TASK(Task2) {
 }
 
 TASK(Task1) {
+	display_goto_xy(x, y);
+	display_int(1, 1);
+
+	display_goto_xy(x + 1, 0);
+	
+	systick_wait_ms(500);
+	
+	display_int(1, 1);
+	
 	TerminateTask();
 }
 
