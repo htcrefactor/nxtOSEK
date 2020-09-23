@@ -1,4 +1,4 @@
-TARGET = motortest_OSEK
+TARGET = eventtest_OSEK
 TARGET_SOURCES = \
 	eventtest.c
 TOPPERS_OSEK_OIL_SOURCE = ./eventtest.oil
