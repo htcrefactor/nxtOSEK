@@ -30,6 +30,7 @@ CPU ATMEL_AT91SAM7S256 {
 			APPMODE = appmode1;
 		};
 		EVENT = event1;
+		EVENT = event2;
 		PRIORITY = 2;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
@@ -37,6 +38,10 @@ CPU ATMEL_AT91SAM7S256 {
 	};
 
 	EVENT event1 {
+		MASK = AUTO;
+	};
+	
+	EVENT event2 {
 		MASK = AUTO;
 	};
 

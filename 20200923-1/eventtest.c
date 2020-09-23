@@ -9,6 +9,7 @@ DeclareCounter(SysTimerCnt);
 DeclareTask(Task1);
 DeclareTask(Task2);
 DeclareEvent(event1);
+DeclareEvent(event2);
 
 /* Global Variables */
 int count_t1 = 0;
@@ -24,18 +25,15 @@ void user_1ms_isr_type2(void) {
 }
 
 TASK(Task2) {
-	count_t2 = count_t2 + 1;
-	
 	while(1) {
 		count_t2 = count_t2 + 1;
-		
-		if(ecrobot_get_touch_sensor(S1) !== 0) {
-			nxt_motor_set_speed(A, 80, 1);
-		}
-		
+	
 		WaitEvent(event1);
 		ClearEvent(event1);
-		
+		nxt_motor_set_speed(A, 80, 1);
+			
+		WaitEvent(event2);
+		ClearEvent(event2);
 		nxt_motor_set_speed(A, 0, 1);
 	}
 	
@@ -59,6 +57,8 @@ TASK(Task1) {
 	
 	if(ecrobot_get_touch_sensor(S1) == TRUE) {
 		SetEvent(Task2, event1);
+	} else {
+		SetEvent(Task2, event2);
 	}
 	
 	TerminateTask();
