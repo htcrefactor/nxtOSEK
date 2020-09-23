@@ -26,15 +26,18 @@ void user_1ms_isr_type2(void) {
 TASK(Task2) {
 	count_t2 = count_t2 + 1;
 	
+	display_goto_xy(0, 0);
+	display_string("Task2 Count:");
+	display_goto_xy(12, 1);
+	display_int(count_t2, 3);
+	display_update();
+	
 	while(WaitEvent(event1) == E_OK) {
-		ClearEvent(event1);
-		
-		if(ecrobot_get_touch_sensor(S1) == TRUE) {
-			nxt_motor_set_speed(A, 80, 1);
-		} else {
-			nxt_motor_set_speed(A, 0, 1);
-		}
+		nxt_motor_set_speed(A, 80, 1);
+		ClearEvent(event1);			
 	}
+	
+	nxt_motor_set_speed(A, 0, 1);
 	
 	TerminateTask();
 }
@@ -46,12 +49,6 @@ TASK(Task1) {
 	display_string("Task1 Count:");
 	display_goto_xy(12, 1);
 	display_int(count_t1, 3);
-	
-	display_goto_xy(0, 0);
-	display_string("Task2 Count:");
-	display_goto_xy(12, 0);
-	display_int(count_t2, 3);
-
 	display_update();
 	
 	if(ecrobot_get_touch_sensor(S1) == TRUE) {
