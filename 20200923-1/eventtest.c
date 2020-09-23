@@ -26,14 +26,17 @@ void user_1ms_isr_type2(void) {
 TASK(Task2) {
 	count_t2 = count_t2 + 1;
 	
-	while(WaitEvent(event1) == E_OK) {
+	while(1) {
+		count_t2 = count_t2 + 1;
+		
+		if(ecrobot_get_touch_sensor(S1) !== 0) {
+			nxt_motor_set_speed(A, 80, 1);
+		}
+		
+		WaitEvent(event1);
 		ClearEvent(event1);
 		
-		if(ecrobot_get_touch_sensor(S1) == TRUE) {
-			nxt_motor_set_speed(A, 80, 1);
-		} else {
-			nxt_motor_set_speed(A, 0, 1);
-		}
+		nxt_motor_set_speed(A, 0, 1);
 	}
 	
 	TerminateTask();
