@@ -1,1 +1,16 @@
 ~
+.sh
+.f
+.d
+.o
+.oram
+.ld
+implementation.oil
+kernel_cfg.c
+kernel_id.h
+.rxe
+.bin
+.elf
+.map
+.bin
+
