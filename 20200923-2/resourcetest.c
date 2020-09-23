@@ -19,6 +19,8 @@ void user_1ms_isr_type2(void) {
 }
 
 TASK(Task4) {
+	GetResource(R1);
+	
 	ActivateTask(Task1);
 	ActivateTask(Task2);
 	ActivateTask(Task3);
@@ -35,6 +37,8 @@ TASK(Task4) {
 	
 	display_int(2, 1);
 	display_update();
+	
+	ReleaseResource(R1);
 	
 	TerminateTask();
 }
@@ -74,6 +78,8 @@ TASK(Task2) {
 }
 
 TASK(Task1) {
+	GetResource(R1);
+	
 	display_goto_xy(x, y);
 	display_int(1, 1);
 	display_update();
@@ -85,6 +91,8 @@ TASK(Task1) {
 	
 	display_int(1, 1);
 	display_update();
+	
+	ReleaseResource(R1);
 	
 	TerminateTask();
 }
