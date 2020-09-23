@@ -25,6 +25,21 @@ void user_1ms_isr_type2(void) {
 }
 
 TASK(Task4) {
+	ActivateTask(Task1);
+	ActivateTask(Task2);
+	ActivateTask(Task3);
+	
+	x = x + 1;
+	display_goto_xy(x, y);
+	display_int(2, 1);
+	
+	x = x + 1;
+	display_goto_xy(x, y);
+
+	systick_wait_ms(500);
+	
+	display_int(2, 1);
+	
 	TerminateTask();
 }
 
