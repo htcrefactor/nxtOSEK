@@ -33,6 +33,17 @@ TASK(Task3) {
 }
 
 TASK(Task2) {
+	x = x + 1;
+	display_goto_xy(x, y);
+	display_int(2, 1);
+	
+	x = x + 1;
+	display_goto_xy(x, y);
+
+	systick_wait_ms(500);
+	
+	display_int(2, 1);
+	
 	TerminateTask();
 }
 
