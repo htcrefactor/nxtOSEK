@@ -40,7 +40,8 @@ TASK(Task1) {
 	display_goto_xy(x, y);
 	display_int(1, 1);
 
-	display_goto_xy(x + 1, 0);
+	x = x + 1;
+	display_goto_xy(x, 0);
 	
 	systick_wait_ms(500);
 	
