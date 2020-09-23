@@ -1,3 +1,2 @@
-/home/osek/nxtOSEK/toppers_osek/sg/sg.exe ./[my-oil-file] -os=ECC2 -I 
-/home/osek/nxtOSEK/toppers_osek/sg/impl_oil -template=/home/osek/nxtOSEK/toppers_osek/sg/lego_nxt.sgt
+/home/osek/nxtOSEK/toppers_osek/sg/sg.exe ./[my-oil-file] -os=ECC2 -I /home/osek/nxtOSEK/toppers_osek/sg/impl_oil -template=/home/osek/nxtOSEK/toppers_osek/sg/lego_nxt.sgt
 
