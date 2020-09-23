@@ -32,6 +32,7 @@ TASK(Task4) {
 	x = x + 1;
 	display_goto_xy(x, y);
 	display_int(2, 1);
+	display_update();
 	
 	x = x + 1;
 	display_goto_xy(x, y);
@@ -39,6 +40,7 @@ TASK(Task4) {
 	systick_wait_ms(500);
 	
 	display_int(2, 1);
+	display_update();
 	
 	TerminateTask();
 }
@@ -47,6 +49,7 @@ TASK(Task3) {
 	x = x + 1;
 	display_goto_xy(x, y);
 	display_int(3, 1);
+	display_update();
 	
 	x = x + 1;
 	display_goto_xy(x, y);
@@ -54,6 +57,7 @@ TASK(Task3) {
 	systick_wait_ms(500);
 	
 	display_int(3, 1);
+	display_update();
 	
 	TerminateTask();
 }
@@ -62,6 +66,7 @@ TASK(Task2) {
 	x = x + 1;
 	display_goto_xy(x, y);
 	display_int(2, 1);
+	display_update();
 	
 	x = x + 1;
 	display_goto_xy(x, y);
@@ -69,6 +74,7 @@ TASK(Task2) {
 	systick_wait_ms(500);
 	
 	display_int(2, 1);
+	display_update();
 	
 	TerminateTask();
 }
@@ -76,13 +82,15 @@ TASK(Task2) {
 TASK(Task1) {
 	display_goto_xy(x, y);
 	display_int(1, 1);
-
+	display_update();
+	
 	x = x + 1;
 	display_goto_xy(x, 0);
 	
 	systick_wait_ms(500);
 	
 	display_int(1, 1);
+	display_update();
 	
 	TerminateTask();
 }
