@@ -5,6 +5,7 @@
 #define A 	NXT_PORT_A
 #define	S1	NXT_PORT_S1
 
+DeclareResource(R1);
 DeclareTask(Task1);
 DeclareTask(Task2);
 DeclareTask(Task3);
