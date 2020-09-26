@@ -110,7 +110,7 @@ ALARM cyclic_alarm2
     AUTOSTART = TRUE
     {
       ALARMTIME = 1;
-      CYCLETIME = 5; /* Executed every 5msec */
+      CYCLETIME = 10; /* Executed every 5msec */
       APPMODE = appmode1;
     };
   }; 
