@@ -25,15 +25,21 @@ DeclareEvent(TouchSensorOffEvent);
 
 DeclareTask(SonarTask);
 
+/* Global Variables */
 int speed = 60;
 int motorDisplacement = 0;
 int target =0 ;
 signed int flag = 0;
 signed int degree;
 int right_left;
-int systemFreeze = 0;
-/* below macro enables run-time Bluetooth connection */
+S32 sonarData[10] = {0};
+int sonarIndex = 0;
+int sonarMedian = 0;
 
+/* Function Prototypes */
+void sortS32Array(S32 fromArray[], S32 toArray[], const int size);
+
+/* below macro enables run-time Bluetooth connection */
 #define RUNTIME_CONNECTION
 
 
@@ -44,14 +50,18 @@ void ecrobot_device_initialize()
 
 {
   ecrobot_init_bt_slave("ma-slave");
+  ecrobot_init_sonar_sensor(NXT_PORT_S1);
+  
+  	//nothin
+  
 }
 
 
 void ecrobot_device_terminate()
-
 {
 
 	ecrobot_term_bt_connection();
+	ecrobot_term_sonar_sensor(NXT_PORT_S1);
 
 }
 
@@ -82,22 +92,11 @@ void user_1ms_isr_type2(void)
 
 
 
+
 /* EventDispatcher executed every 5ms */
 
-int count2 = 0;
 TASK(EventDispatcher)
 {
-if(systemFreeze == 1) {
-if(count2 == 10) {
-count2 = 0;
-systemFreeze = 0;
-}
-else{
-count2++;
-//systemFreeze = 0;
- TerminateTask();
-   }
-}
   static U8 bt_receive_buf[32]; 
 
   static U8 TouchSensorStatus_old = 0;
@@ -228,18 +227,13 @@ if(bt_receive_buf[6] == 1 && bt_receive_buf[7] != 0)
   TerminateTask();
 
 }
-int count =0;
+
 
 /* SonarTask executed every 500ms */
 
 TASK(SonarTask)
 { 
-  if(count == 0){
-  count++;
-  TerminateTask();
-  }
-  static S32 distance =0;
-  ecrobot_init_sonar_sensor(NXT_PORT_S1);
+  /*
    static S32 sonar[10];
    static int i = 0;
    S32 tmp = 0;
@@ -263,12 +257,44 @@ TASK(SonarTask)
   display_int(distance,0);
   display_update();
   
-  if(distance > 100) {
-  systemFreeze = 1;
+  if(distance > 50) {
+  
   nxt_motor_set_speed(NXT_PORT_A, 0, 0);
   nxt_motor_set_speed(NXT_PORT_C, 0, 0);
+  systemFreeze = 1;
   }
   TerminateTask();
+  */
+  // Receive ultrasonic data
+  S32 sonarSort[10] = {0};
+  sonarData[sonarIndex] = ecrobot_get_sonar_sensor(NXT_PORT_S1);
+  if(sonarIndex == 9) {
+  	sonarIndex = 0;
+  } else {
+  	sonarIndex = sonarIndex + 1;
+  }
+  
+  // Copy sonarData to sonarSort
+  for(int i = 0 ; i < 10 ; i++) {
+  	sonarSort[i] = sonarData[i];
+  }
+  
+  // Sort sonarSort
+  int is, js, min_idx; 
+    for (is = 0; is < n - 1; is++) { 
+        min_idx = is; 
+        for (js = is + 1; js < n; js++) 
+            if (sonarSort[js] < sonarSort[min_idx]) 
+                min_idx = js; 
+
+  	  int temp = sonarSort[min_idx]; 
+  	  sonarSort[min_idx] = sonarSort[is]; 
+ 	  sonarSort[is] = temp; 
+    }
+    
+    // Get median value
+    sonarMedian = sonarSort[5];
+    
 }
 
 
