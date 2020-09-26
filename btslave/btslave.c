@@ -8,6 +8,7 @@
 
 
 
+
 /* OSEK declarations */
 
 DeclareCounter(SysTimerCnt);
@@ -22,12 +23,14 @@ DeclareEvent(TouchSensorOnEvent);
 
 DeclareEvent(TouchSensorOffEvent); 
 
+DeclareTask(SonarTask);
 
 int speed = 60;
 int motorDisplacement = 0;
 int target =0 ;
-int flag = 0;
-int degree;
+signed int flag = 0;
+signed int degree;
+int right_left;
 /* below macro enables run-time Bluetooth connection */
 
 #define RUNTIME_CONNECTION
@@ -47,7 +50,7 @@ void ecrobot_device_terminate()
 
 {
 
-   ecrobot_term_bt_connection();
+	ecrobot_term_bt_connection();
 
 }
 
@@ -82,7 +85,6 @@ void user_1ms_isr_type2(void)
 /* EventDispatcher executed every 5ms */
 
 TASK(EventDispatcher)
-
 {
 
   static U8 bt_receive_buf[32]; 
@@ -96,7 +98,7 @@ ecrobot_read_bt_packet(bt_receive_buf, 32);
 
   /* read packet data from the master device */  
  degree = nxt_motor_get_count(NXT_PORT_B);
-
+/*
       display_clear(0);
       display_goto_xy(0, 0);
       display_string("3 :");
@@ -120,11 +122,12 @@ ecrobot_read_bt_packet(bt_receive_buf, 32);
       display_goto_xy(0, 6);
       display_string("degree:");
       display_int(degree, 4);
-  
+  */
 
   speed = 60;
 
 ///////////////////////////////////
+
   if (bt_receive_buf[5] == 1){
      speed = 80;
   }
@@ -134,6 +137,7 @@ ecrobot_read_bt_packet(bt_receive_buf, 32);
   }
 
  ///////////////////////////////////
+
     if (bt_receive_buf[3] == 1 && bt_receive_buf[7] == 0)
   {
       nxt_motor_set_speed(NXT_PORT_A, -speed, 0);
@@ -147,36 +151,13 @@ ecrobot_read_bt_packet(bt_receive_buf, 32);
   }
 
 /////////////////////////////////////
-/*
-if (bt_receive_buf[4] == 3 && flag == 0)
-  { 
-    target = nxt_motor_get_count(NXT_PORT_B) - 5;
-    nxt_motor_set_speed(NXT_PORT_B,-80,0);
-    flag++;
-  }
-else{
-    if(target > degree) nxt_motor_set_speed(NXT_PORT_B,0,0);
-    flag = 0;
-}
 
-  if(bt_receive_buf[4] == 4 && flag == 0)
-  {
-    target = nxt_motor_get_count(NXT_PORT_B) + 5;
-    nxt_motor_set_speed(NXT_PORT_B,60,0);
-    flag++;   
-  }
-else{
-   if(target < degree) nxt_motor_set_speed(NXT_PORT_B,0,0);
-    flag = 0;
-  
-}
-*/
 if(bt_receive_buf[4] == 3) {
-  nxt_motor_set_speed(NXT_PORT_B, -70, 0);
+  nxt_motor_set_speed(NXT_PORT_B, -80, 0);
 }
 
 if(bt_receive_buf[4] == 4) {
-  nxt_motor_set_speed(NXT_PORT_B, 70, 0);
+  nxt_motor_set_speed(NXT_PORT_B, 80, 0);
 }
 
 if(bt_receive_buf[4] == 0) {
@@ -184,10 +165,9 @@ if(bt_receive_buf[4] == 0) {
   nxt_motor_set_count(NXT_PORT_B, 0);
 }
 
-    
-
  ////////////////////////////////////
-   if(bt_receive_buf[6] == 1 && bt_receive_buf[7] != 0)
+   
+if(bt_receive_buf[6] == 1 && bt_receive_buf[7] != 0)
   { 
     speed = 0;
     nxt_motor_set_speed(NXT_PORT_A,speed, 1);
@@ -203,6 +183,7 @@ if(bt_receive_buf[4] == 0) {
     nxt_motor_set_speed(NXT_PORT_C,speed, 0);
     }
   }
+
 /////////////////////////////////////   
 
   
@@ -238,6 +219,39 @@ if(bt_receive_buf[4] == 0) {
 }
 
 
+/* SonarTask executed every 500ms */
+
+TASK(SonarTask)
+{ 
+  static S32 distance =0;
+  ecrobot_init_sonar_sensor(NXT_PORT_S1);
+   static S32 sonar[10];
+   static int i = 0;
+   S32 tmp = 0;
+   
+
+   sonar[i++]=  ecrobot_get_sonar_sensor(NXT_PORT_S1);
+   if(i == 10) {
+      for(int j=i;sonar[j] < sonar[j-1];j--) {
+         tmp = sonar[j];
+         sonar[j] = sonar[j-1];
+         sonar[j-1] = tmp;
+      }
+      distance = sonar[5];
+      i = 0;
+   }
+   
+
+  display_clear(0);
+  display_goto_xy(0, 1);
+  display_string("distance: ");
+  display_int(distance,0);
+  display_update();
+  
+  
+  TerminateTask();
+}
+
 
 
 /* EventHandler executed by OSEK Events */
@@ -258,11 +272,11 @@ TASK(EventHandler)
 
     ClearEvent(TouchSensorOnEvent);
 
-     /* send packet data to the master device */
+  	/* send packet data to the master device */
 
-     bt_send_buf[0] = 1;
+  	bt_send_buf[0] = 1;
 
-   ecrobot_send_bt_packet(bt_send_buf, 32);
+	ecrobot_send_bt_packet(bt_send_buf, 32);
 
 
 
@@ -270,11 +284,11 @@ TASK(EventHandler)
 
     ClearEvent(TouchSensorOffEvent);
 
-     /* send packet data to the master device */
+  	/* send packet data to the master device */
 
-     bt_send_buf[0] = 0;
+  	bt_send_buf[0] = 0;
 
-   ecrobot_send_bt_packet(bt_send_buf, 32);
+	ecrobot_send_bt_packet(bt_send_buf, 32);
 
   }
 
@@ -321,6 +335,7 @@ TASK(IdleTask)
 
     bt_status = ecrobot_get_bt_status();
 
-  }   
+  }	
 
 }
+
