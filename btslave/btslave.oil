@@ -69,7 +69,7 @@ CPU ATMEL_AT91SAM7S256
   TASK SonarTask
   {
    AUTOSTART = FALSE;
-    PRIORITY = 3;
+    PRIORITY = 4;
     ACTIVATION = 1;
     SCHEDULE = FULL;
     STACKSIZE = 512; /* Stack size */

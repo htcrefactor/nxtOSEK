@@ -118,7 +118,7 @@ display_clear(0);
       display_string("6 :");
       display_int(bt_receive_buf[6],0);
       display_string("7 :");
-      display_int(bt_receive_buf[7],0);
+        display_int(bt_receive_buf[7],0);
       display_goto_xy(0, 5);
       display_string("speed :");
       display_int(speed,0);
@@ -133,11 +133,10 @@ display_clear(0);
 ///////////////////////////////////
 
   if (bt_receive_buf[5] == 1){
-     speed = 80;
+     speed = 75;
   }
-    
-  if (bt_receive_buf[5] == 2){
-      speed = 70;
+      if (bt_receive_buf[5] == 2){
+      speed = 65;
   }
 
  ///////////////////////////////////
@@ -146,22 +145,48 @@ display_clear(0);
   {
       nxt_motor_set_speed(NXT_PORT_A, -speed, 0);
       nxt_motor_set_speed(NXT_PORT_C, -speed, 0);  
-  }
-
+     if(flag == 1){
+       count++;
+    
+      if(bt_receive_buf[5] == 2){
+        if(count >= 0 && count < 23){
+     nxt_motor_set_speed(NXT_PORT_A, 100, 1);
+     nxt_motor_set_speed(NXT_PORT_C, 100, 1);
+        
+         }
+       else {
+        nxt_motor_set_speed(NXT_PORT_A, 0, 1);
+      nxt_motor_set_speed(NXT_PORT_C, 0, 1);
+           }      
+         }
+     if(bt_receive_buf[5] == 1){
+     if(count >= 0 && count < 45){
+     nxt_motor_set_speed(NXT_PORT_A, 100, 1);
+     nxt_motor_set_speed(NXT_PORT_C, 100, 1);
+         }
+         else {
+        nxt_motor_set_speed(NXT_PORT_A, 0, 1);
+      nxt_motor_set_speed(NXT_PORT_C, 0, 1);
+         }
+       }
+       TerminateTask();
+     }
+   }
   else if(bt_receive_buf[3] == 2 && bt_receive_buf[7] == 0)
   {
      nxt_motor_set_speed(NXT_PORT_A, speed, 0);
      nxt_motor_set_speed(NXT_PORT_C, speed, 0);  
+     count = 0;
   }
 
 /////////////////////////////////////
 
 if(bt_receive_buf[4] == 3) {
-  nxt_motor_set_speed(NXT_PORT_B, -80, 0);
+  nxt_motor_set_speed(NXT_PORT_B, -60, 0);
 }
 
 if(bt_receive_buf[4] == 4) {
-  nxt_motor_set_speed(NXT_PORT_B, 80, 0);
+  nxt_motor_set_speed(NXT_PORT_B, 60, 0);
 }
 
 if(bt_receive_buf[4] == 0) {
@@ -170,8 +195,7 @@ if(bt_receive_buf[4] == 0) {
 }
 
   ////////////////////////////////////
-   
-if(bt_receive_buf[6] == 1 && bt_receive_buf[7] != 0)
+   if(bt_receive_buf[6] == 1 && bt_receive_buf[7] != 0)
   { 
     speed = 0;
     nxt_motor_set_speed(NXT_PORT_A,speed, 1);
@@ -189,21 +213,7 @@ if(bt_receive_buf[6] == 1 && bt_receive_buf[7] != 0)
   }
 
 /////////////////////////////////////   
-
-  if(flag == 1 && bt_receive_buf[3] == 1) {
-      count++;
-      if(count >= 0 && count < 20){
-  	nxt_motor_set_speed(NXT_PORT_A, 100, 1);
-  	nxt_motor_set_speed(NXT_PORT_C, 100, 1);
-  }
-    else {
-        nxt_motor_set_speed(NXT_PORT_A, 0, 1);
-   	nxt_motor_set_speed(NXT_PORT_C, 0, 1);
-    
-    }
-
-  }
-  
+ 
   TouchSensorStatus = ecrobot_get_touch_sensor(NXT_PORT_S4);
 
   if (TouchSensorStatus == 1 && TouchSensorStatus_old == 0)
@@ -246,7 +256,7 @@ TASK(SonarTask)
    sonar_data[i] = sonar_data[i+1];
    sonar_sort[i] = sonar_data[i];
   }
-   sonar_data[9] = ecrobot_get_sonar_sensor(NXT_PORT_S1);
+    sonar_data[9] = ecrobot_get_sonar_sensor(NXT_PORT_S1);
    sonar_sort[9] = sonar_sort[9]; 
       for(int j=i;sonar_sort[j] < sonar_sort[j-1];j--) {
          tmp = sonar_sort[j];
@@ -256,17 +266,12 @@ TASK(SonarTask)
       distance = sonar_sort[6];
       i = 0;
    
-   if(sonar_sort[8] > 35) {
-        nxt_motor_set_speed(NXT_PORT_A, -60, 1);
-  	nxt_motor_set_speed(NXT_PORT_C, -60, 1);
-
-   }
-   
-  if(distance > 35) flag = 1;
+  if(distance > 23){ 
+   flag = 1;
+}
   
-  if(distance < 35) {flag = 0;
-  count = 0;
-  }
+  if(distance < 23) flag = 0;
+  
   display_clear(0);
   display_goto_xy(0, 1);
   display_string("distance: ");
