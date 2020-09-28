@@ -222,7 +222,7 @@ TASK(SonarTask)
     sonar_sort[9] = sonar_data[9];
     for (int i = 0; i < 9; i++)
     {
-        for (int j = 0 ; j < n - i - 1 ; j++)
+        for (int j = 0 ; j < 9 - i ; j++)
         {
             if(sonar_sort[j] > sonar_sort[j+1])
             {
