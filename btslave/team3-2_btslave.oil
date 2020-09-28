@@ -1,0 +1,179 @@
+#include "implementation.oil"
+
+CPU ATMEL_AT91SAM7S256
+{
+  OS LEJOS_OSEK
+  {
+    STATUS = EXTENDED;
+    STARTUPHOOK = FALSE;
+    ERRORHOOK = FALSE;
+    SHUTDOWNHOOK = FALSE;
+    PRETASKHOOK = FALSE;
+    POSTTASKHOOK = FALSE;
+    USEGETSERVICEID = FALSE;
+    USEPARAMETERACCESS = FALSE;
+    USERESSCHEDULER = FALSE;
+  };
+
+  /* Definition of application mode */
+  APPMODE appmode1{};
+
+  RESOURCE R1
+  {
+    RESOURCEPROPERTY = STANDARD;
+  };
+
+  /* Definition of Touch Sensor ON Event */
+  EVENT TouchSensorOnEvent
+  {
+    MASK = AUTO;
+  };
+
+  /* Definition of Touch Sensor OFF Event */
+  EVENT TouchSensorOffEvent
+  {
+    MASK = AUTO;
+  };
+
+  EVENT ForwardBackwardVelocityEvent
+  {
+    MASK = AUTO;
+  };
+
+  EVENT BreakEvent
+  {
+    MASK = AUTO;
+  };
+
+  EVENT CurveEvent
+  {
+    MASK = AUTO;
+  };
+
+  /* Definition of EventDispatcher */
+  TASK EventDispatcher
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 3;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+  };
+
+  /* Definition of EventHandler */
+  TASK EventHandler
+  {
+    AUTOSTART = TRUE
+    {
+      APPMODE = appmode1;
+    };
+    PRIORITY = 2;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+    EVENT = TouchSensorOnEvent;
+    EVENT = TouchSensorOffEvent;
+  };
+
+  /* Definition of IdleTask */
+  TASK IdleTask
+  {
+
+    AUTOSTART = TRUE
+    {
+      APPMODE = appmode1;
+    };
+    PRIORITY = 1;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+  };
+
+  TASK ForwardBackwardVelocityTask
+  {
+    AUTOSTART = TRUE
+    {
+      APPMODE = appmode1;
+    };
+    PRIORITY = 3;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+    EVENT = ForwardBackwardVelocityEvent;
+  };
+
+  TASK CurveTask
+  {
+    AUTOSTART = TRUE
+    {
+      APPMODE = appmode1;
+    };
+    PRIORITY = 3;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+    EVENT = CurveEvent;
+  };
+
+  TASK BreakTask
+  {
+    AUTOSTART = TRUE
+    {
+      APPMODE = appmode1;
+    };
+    PRIORITY = 3;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+
+    EVENT = BreakEvent;
+  };
+
+  TASK SonarTask
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 4;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */
+    RESOURCE = R1;
+  };
+
+  /* Definition of OSEK Alarm Counter */
+  COUNTER SysTimerCnt
+  {
+    MINCYCLE = 1;
+    MAXALLOWEDVALUE = 10000;
+    TICKSPERBASE = 1; /* One tick is equal to 1msec */
+  };
+  /* Definition of EventDispatcher execution timing */
+  ALARM cyclic_alarm1
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+      TASK = EventDispatcher;
+    };
+    AUTOSTART = TRUE
+    {
+      ALARMTIME = 1;
+      CYCLETIME = 5; /* Executed every 5msec */
+      APPMODE = appmode1;
+    };
+  };
+
+  ALARM cyclic_alarm2
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+      TASK = SonarTask;
+    };
+    AUTOSTART = TRUE
+    {
+      ALARMTIME = 1;
+      CYCLETIME = 15; /* Executed every 5msec */
+      APPMODE = appmode1;
+    };
+  };
+};
