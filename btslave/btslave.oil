@@ -18,6 +18,10 @@ CPU ATMEL_AT91SAM7S256
     /* Definition of application mode */
     APPMODE appmode1{};
 
+    RESOURCE R1
+    {
+        RESOURCEPROPERTY = STANDARD;
+    };
     /* Definition of Touch Sensor ON Event */
     EVENT TouchSensorOnEvent
     {
@@ -89,10 +93,24 @@ CPU ATMEL_AT91SAM7S256
         {
             APPMODE = appmode1;
         };
-        PRIORITY = 1;
+        PRIORITY = 3;
         ACTIVATION = 1;
         SCHEDULE = FULL;
         STACKSIZE = 512; /* Stack size */
+        EVENT = ForwardBackwardVelocityEvent;
+    };
+
+    TASK CurveTask
+    {
+        AUTOSTART = TRUE
+        {
+            APPMODE = appmode1;
+        };
+        PRIORITY = 3;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        STACKSIZE = 512; /* Stack size */
+        EVENT = CurveEvent;
     };
 
     TASK BreakTask
@@ -101,21 +119,11 @@ CPU ATMEL_AT91SAM7S256
         {
             APPMODE = appmode1;
         };
-        PRIORITY = 1;
+        PRIORITY = 3;
         ACTIVATION = 1;
         SCHEDULE = FULL;
         STACKSIZE = 512; /* Stack size */
-    };
-    TASK CurveTask
-    {
-        AUTOSTART = TRUE
-        {
-            APPMODE = appmode1;
-        };
-        PRIORITY = 1;
-        ACTIVATION = 1;
-        SCHEDULE = FULL;
-        STACKSIZE = 512; /* Stack size */
+        EVENT = BreakEvent;
     };
 
     TASK SonarTask
@@ -125,6 +133,7 @@ CPU ATMEL_AT91SAM7S256
         ACTIVATION = 1;
         SCHEDULE = FULL;
         STACKSIZE = 512; /* Stack size */
+        RESOURCE = R1;
     };
 
     /* Definition of OSEK Alarm Counter */
@@ -150,20 +159,4 @@ CPU ATMEL_AT91SAM7S256
             APPMODE = appmode1;
         };
     };
-
-    ALARM cyclic_alarm2
-    {
-        COUNTER = SysTimerCnt;
-        ACTION = ACTIVATETASK
-        {
-            TASK = SonarTask;
-        };
-        AUTOSTART = TRUE
-        {
-            ALARMTIME = 1;
-            CYCLETIME = 15; /* Executed every 5msec */
-            APPMODE = appmode1;
-        };
-    };
 };
-
